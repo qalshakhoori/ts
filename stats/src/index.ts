@@ -1,6 +1,9 @@
 import { MatchReader } from './MatchReader';
 import { CsvFileReader } from './CsvFileReader';
-import { MatchResults } from './MatchResults';
+import { ConsoleReport } from './reportTargets/ConsoleReport';
+import { WinsAnalysis } from './analyzers/WinsAnalysis';
+import { Summery } from './Summery';
+import { HtmlReport } from './reportTargets/HtmlReport';
 
 // Create an object that satisfies the 'DataReader' interface
 const csvFileReader = new CsvFileReader('football.csv');
@@ -10,14 +13,10 @@ const csvFileReader = new CsvFileReader('football.csv');
 const macthReader = new MatchReader(csvFileReader);
 macthReader.load();
 
-let manUnitedWins = 0;
+const summery = new Summery(
+  new WinsAnalysis('Man United'),
+  // new ConsoleReport()
+  new HtmlReport()
+);
 
-for (const match of macthReader.matchs) {
-  if (match[1] === 'Man United' && match[5] === MatchResults.HomeWin) {
-    manUnitedWins++;
-  } else if (match[2] === 'Man United' && match[5] === MatchResults.AwayWin) {
-    manUnitedWins++;
-  }
-}
-
-console.log(manUnitedWins);
+summery.buildAndPrintReport(macthReader.matchs);

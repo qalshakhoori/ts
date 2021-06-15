@@ -1,21 +1,28 @@
 import 'reflect-metadata';
 
-const plane = {
-  color: 'red',
-};
+@printMetadata
+class Plane {
+  color: string = 'red';
 
-Reflect.defineMetadata('note', 'Hi there', plane);
-Reflect.defineMetadata('height', 10, plane);
+  @markFunction('HI THERE')
+  fly(): void {
+    console.log('vrrrrrrrrrrrrrr');
+  }
+}
 
-console.log(plane);
+function markFunction(secretInfor: string) {
+  return function (target: Plane, key: string) {
+    Reflect.defineMetadata('secret', secretInfor, target, key);
+  };
+}
 
-const note = Reflect.getMetadata('note', plane);
-const height = Reflect.getMetadata('height', plane);
+function printMetadata(target: typeof Plane) {
+  for (let key in target.prototype) {
+    const secret = Reflect.getMetadata('secret', target.prototype, key);
+    console.log(secret);
+  }
+}
 
-console.log(note);
-console.log(height);
+const secret = Reflect.getMetadata('secret', Plane.prototype, 'fly');
 
-Reflect.defineMetadata('note', 'hi there', plane, 'color');
-const colorNote = Reflect.getOwnMetadata('note', plane, 'color');
-
-console.log(colorNote);
+console.log(secret);
